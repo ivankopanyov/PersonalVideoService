@@ -7,12 +7,28 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{1EB80D41-53B
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{093DD166-CECA-4CDF-B07B-0933870DB7A5}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Identity", "Identity", "{BB044574-20AD-40FB-9BED-78F947AAAC63}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Identity.API", "Services\Identity\Identity.API\Identity.API.csproj", "{076402A3-8718-44C1-9143-D996472179E4}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{076402A3-8718-44C1-9143-D996472179E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{076402A3-8718-44C1-9143-D996472179E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{076402A3-8718-44C1-9143-D996472179E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{076402A3-8718-44C1-9143-D996472179E4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{093DD166-CECA-4CDF-B07B-0933870DB7A5} = {1EB80D41-53B7-4B1A-84F5-6D35C6BD23C0}
+		{BB044574-20AD-40FB-9BED-78F947AAAC63} = {093DD166-CECA-4CDF-B07B-0933870DB7A5}
+		{076402A3-8718-44C1-9143-D996472179E4} = {BB044574-20AD-40FB-9BED-78F947AAAC63}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {975FE4D4-B079-4076-A189-07CBC550CDBE}
