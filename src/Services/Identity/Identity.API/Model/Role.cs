@@ -2,9 +2,9 @@
 
 public class Role : IdentityRole
 {
-    public int AccessLevel { get; set; }
+    public Company Company { get; set; }
 
-    public Role() : base() { }
+    public HashSet<Policy> Policies { get; set; }
 
-    public Role(string roleName, int rank) : base(roleName) => AccessLevel = rank;
+    public bool IsSuperAdmin { get; set; } = false;
 }

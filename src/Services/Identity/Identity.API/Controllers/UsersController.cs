@@ -11,12 +11,13 @@ public class UsersController : IdentityController
     [HttpGet]
     [Authorize(AuthenticationSchemes = "Bearer", Policy = "users/items")]
     [Route("users")]
-    public async Task<List<User>> ItemsAsync(int pageSize, int pageIndex)
+    public async Task<List<UserDto>> ItemsAsync(int companyId, int pageSize, int pageIndex)
     {
         if (pageSize <= 0 || pageIndex < 0)
-            return new List<User>();
+            return new List<UserDto>();
 
         return await _userManager.Users
+            .Where(user => !user.Deleted)
             .OrderBy(user => user.Id)
             .Skip(pageSize * pageIndex)
             .Take(pageSize)

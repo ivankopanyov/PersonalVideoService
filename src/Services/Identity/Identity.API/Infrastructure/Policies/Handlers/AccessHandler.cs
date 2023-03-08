@@ -24,9 +24,23 @@ public class AccessHandler : AuthorizationHandler<AccessRequirement>
         if (idClaim == null)
             return Task.CompletedTask;
 
-        var user = _userManager.Users.FirstOrDefault(user => user.Id == idClaim.Value);
+        int id = 0;
+        int.TryParse(idClaim.Value, out id);
+        var user = _userManager.Users.FirstOrDefault(user => user.Id == id);
         if (user == null)
             return Task.CompletedTask;
+
+        var userRolesNames = _userManager.GetRolesAsync(user).Result;
+
+        var userRoles = _roleManager.Roles
+            .Where(role => userRolesNames.Contains(role.Name) 
+                && (role.Company.IsBase && role.IsSuperAdmin)
+                || );
+
+        foreach(var role in userRoles)
+        {
+
+        }
 
         var accessLevel = _userManager.GetRolesAsync(user).Result
             .Select(roleName => _roleManager.Roles.FirstOrDefault(role => role.Name == roleName))

@@ -6,6 +6,8 @@ public class IdentityContext : IdentityDbContext<User, Role, string>
 
     public DbSet<Policy> Policies { get; set; }
 
+    public DbSet<Company> Companies { get; set; }
+
     public IdentityContext(IConfiguration configuration)
     {
         _configuration = configuration;

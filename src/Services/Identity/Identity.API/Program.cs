@@ -1,3 +1,5 @@
+using PersonalVideoService.Services.Identity.API.Model;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -93,44 +95,72 @@ using (var client = new IdentityContext(app.Configuration))
         .Where(policy => !policies.Contains(policy.Name))
         .ForEachAsync(policy => client.Policies.Remove(policy));
 
-    int maxAccessLevel = 0;
+    foreach (var policy in policies)
+        if (client.Policies.FirstOrDefault(p => p.Name == policy) == null)
+            client.Policies.Add(new Policy()
+            {
+                Name = policy!
+            });
+
+    client.SaveChanges();
+
+    Company baseCompany = client.Companies
+        .FirstOrDefault(company => company.IsBase)!;
+
+    if (baseCompany == null)
+    {
+        baseCompany = new Company()
+        {
+            Name = "BaseCompany",
+            IsBase = true
+        };
+
+        await client.Companies.AddAsync(baseCompany);
+        client.SaveChanges();
+    }
 
     using (var scope = app.Services.CreateScope())
     {
         var roleManager = (RoleManager<Role>)scope.ServiceProvider.GetService(typeof(RoleManager<Role>))!;
-        if (roleManager.Roles.Count() == 0)
+        Role superAdminRole = roleManager.Roles.FirstOrDefault(role => role.Company == baseCompany && role.IsSuperAdmin)!;
+
+        if (superAdminRole == null)
         {
-            maxAccessLevel = 1;
-            var roleName = "Supervisor";
-            await roleManager.CreateAsync(new Role(roleName, maxAccessLevel));
-            var userManager = (UserManager<User>)scope.ServiceProvider.GetService(typeof(UserManager<User>))!;
-            var user = new User()
+            superAdminRole = new Role()
             {
-                UserName = "supervisor@candleshop.com",
-                Email = "supervisor@candleshop.com"
+                Name = "Superadmin",
+                Company = baseCompany,
+                IsSuperAdmin = true
+            };
+            await roleManager.CreateAsync(superAdminRole);
+        }
+
+        var userManager = (UserManager<User>)scope.ServiceProvider.GetService(typeof(UserManager<User>))!;
+        string email = "superadmin@basecompany.com";
+        User superAdmin = userManager.Users.FirstOrDefault(user => user.Email == email)!;
+        if (superAdmin == null)
+        {
+            superAdmin = new User()
+            {
+                UserName = email,
+                Email = email,
+                CurrentRole = superAdminRole
             };
 
-            await userManager.CreateAsync(user, "supervisor");
-            await userManager.AddToRolesAsync(user, new[] { roleName });
+            await userManager.CreateAsync(superAdmin, email);
+            await userManager.AddToRolesAsync(superAdmin, new[] { superAdminRole.Name });
         }
-        else
-        {
-            int max = roleManager.Roles.Select(role => role.AccessLevel).Max();
-            if (max > maxAccessLevel)
-                maxAccessLevel = max;
-        }
+
+        string userRoleName = "Users";
+        Role userRole = roleManager.Roles.FirstOrDefault(role => role.Company == baseCompany && role.Name == userRoleName)!;
+
+        if (userRole == null)
+            await roleManager.CreateAsync(new Role()
+            {
+                Name = userRoleName,
+                Company = baseCompany
+            });
     }
-
-    foreach (var policy in policies)
-        if (client.Policies.FirstOrDefault(p => p.Name == policy) == null)
-            client.Policies.Add(
-                new Policy()
-                {
-                    Name = policy!,
-                    MinimumAccessLevel = maxAccessLevel
-                });
-
-    client.SaveChanges();
 }
 
 // Configure the HTTP request pipeline.

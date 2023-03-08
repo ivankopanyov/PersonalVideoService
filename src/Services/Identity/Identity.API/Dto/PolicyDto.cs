@@ -3,6 +3,4 @@
 public class PolicyDto
 {
     public int Id { get; set; }
-
-    public int MinimumAccessLevel { get; set; }
 }
